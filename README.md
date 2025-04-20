@@ -50,7 +50,7 @@ The service will automatically start and run in the background. When distracting
 
 ## Configuration
 
-- Edit `keywords.txt` to customize the distraction keywords
+- Make/Edit `keywords.txt` to customize the distraction keywords
 - The service logs are stored in `focus_reminder.log`
 
 ### Customizing Keywords
