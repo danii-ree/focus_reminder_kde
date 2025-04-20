@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Focus Reminder</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval';">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --text-color: #2c3e50;
+            --background-color: #f5f7fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--background-color), #e0e5ec);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            transform: translateY(0);
+            animation: float 6s ease-in-out infinite;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-weight: 600;
+            animation: fadeIn 1s ease-out;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+            color: var(--secondary-color);
+            animation: fadeIn 1s ease-out 0.2s backwards;
+        }
+
+        .focus-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+            color: var(--primary-color);
+        }
+
+        .distraction-count {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+            font-weight: 600;
+            animation: fadeIn 1s ease-out 0.3s backwards;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .countdown {
+            font-size: 1.5em;
+            margin: 20px 0;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary-color), #357abd);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        button:not(:disabled):hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+            background: linear-gradient(135deg, #357abd, var(--primary-color));
+        }
+
+        button:not(:disabled):active {
+            transform: translateY(1px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    <div class="container">
+        <div class="focus-icon">🎯</div>
+        <h1>Time to Lock In!</h1>
+        <p>You've been watching distracting content for too long. Take a deep breath and get back to your important tasks!</p>
+        <div class="distraction-count" id="distractionCount">This is your first distraction today</div>
+        <div class="countdown" id="countdown"></div>
+        <button id="focusButton" onclick="window.close()" disabled>I'll Focus Now</button>
+    </div>
+
+    <script>
+        // Configuration
+        const FULLSCREEN_DELAY = 0.5; // Delay in seconds before requesting fullscreen
+        let countdownInterval;
+        let remainingTime = 0;
+
+        // Function to request fullscreen
+        function requestFullscreen() {
+            const element = document.documentElement;
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.webkitRequestFullscreen) {
+                element.webkitRequestFullscreen();
+            } else if (element.msRequestFullscreen) {
+                element.msRequestFullscreen();
+            }
+        }
+
+        // Function to handle fullscreen with delay
+        function handleFullscreen() {
+            setTimeout(requestFullscreen, FULLSCREEN_DELAY * 1000);
+        }
+
+        // Function to update countdown
+        function updateCountdown() {
+            const minutes = Math.floor(remainingTime / 60);
+            const seconds = remainingTime % 60;
+            document.getElementById('countdown').textContent = 
+                `Please wait ${minutes}:${seconds.toString().padStart(2, '0')} before focusing`;
+            
+            if (remainingTime <= 0) {
+                clearInterval(countdownInterval);
+                document.getElementById('focusButton').disabled = false;
+                document.getElementById('countdown').textContent = '';
+            } else {
+                remainingTime--;
+            }
+        }
+
+        // Function to start countdown
+        function startCountdown(seconds) {
+            remainingTime = seconds;
+            document.getElementById('focusButton').disabled = true;
+            updateCountdown();
+            countdownInterval = setInterval(updateCountdown, 1000);
+        }
+
+        // Get the wait time and distraction count from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const waitTime = parseInt(urlParams.get('wait')) || 0;
+        if (waitTime > 0) {
+            startCountdown(waitTime);
+        }
+
+        // Add event listeners for fullscreen
+        document.addEventListener('DOMContentLoaded', handleFullscreen);
+        window.addEventListener('load', handleFullscreen);
+
+        // Create floating particles
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 30;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.style.cssText = `
+                position: absolute;
+                width: ${Math.random() * 5 + 2}px;
+                height: ${Math.random() * 5 + 2}px;
+                background: rgba(74, 144, 226, ${Math.random() * 0.3});
+                border-radius: 50%;
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+                animation: floatParticle ${Math.random() * 20 + 10}s linear infinite;
+            `;
+            
+            particlesContainer.appendChild(particle);
+        }
+
+        // Add floating animation for particles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes floatParticle {
+                0% {
+                    transform: translate(0, 0) rotate(0deg);
+                    opacity: 0;
+                }
+                10% {
+                    opacity: 1;
+                }
+                90% {
+                    opacity: 1;
+                }
+                100% {
+                    transform: translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px) rotate(${Math.random() * 360}deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Update distraction count message
+        const distractionCount = localStorage.getItem('distractionCount') || 0;
+        const countElement = document.getElementById('distractionCount');
+        
+        if (distractionCount == 0) {
+            countElement.textContent = "This is your first distraction today";
+        } else {
+            countElement.textContent = `You've been distracted ${distractionCount} time${distractionCount > 1 ? 's' : ''} today`;
+        }
+        
+        // Increment the count
+        localStorage.setItem('distractionCount', parseInt(distractionCount) + 1);
+    </script>
+</body>
+</html>

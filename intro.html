@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus Reminder - Introduction</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --text-color: #2c3e50;
+            --background-color: #f5f7fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--background-color), #e0e5ec);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            width: 500px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+            animation: fadeIn 1s ease-out;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-weight: 800;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(227, 227, 227, 0.938);
+            border-radius: 15px;
+            animation: slideIn 0.5s ease-out;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(55, 55, 55, 0.1);
+            border: 1px solid #e0e5ec;
+        }
+
+        .feature:hover {
+            transform: translateX(10px);
+        }
+
+        .feature-icon {
+            font-size: 2em;
+            margin-right: 15px;
+            color: var(--primary-color);
+        }
+
+        .feature-text {
+            text-align: left;
+            flex: 1;
+        }
+
+        .feature-text h3 {
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        .feature-text p {
+            color: var(--text-color);
+            line-height: 1.4;
+            font-size: 0.9em;
+        }
+
+        .start-button {
+            background: linear-gradient(135deg, var(--primary-color), #357abd);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+            margin-top: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        .start-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+            background: linear-gradient(135deg, #357abd, var(--primary-color));
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    <div class="container">
+        <h1>Welcome to Focus Reminder</h1>
+        <p style="margin-bottom: 30px; font-size: 1.2em;">Your personal productivity guardian</p>
+        
+        <div class="feature">
+            <div class="feature-icon">👀</div>
+            <div class="feature-text">
+                <h3>Smart Screen Monitoring</h3>
+                <p>Our system keeps an eye on your screen content, helping you stay focused on your work.</p>
+            </div>
+        </div>
+
+        <div class="feature">
+            <div class="feature-icon">⏱️</div>
+            <div class="feature-text">
+                <h3>Progressive Timeouts</h3>
+                <p>Each distraction increases your timeout period, encouraging better focus habits.</p>
+            </div>
+        </div>
+
+        <div class="feature">
+            <div class="feature-icon">🎯</div>
+            <div class="feature-text">
+                <h3>Focus Reinforcement</h3>
+                <p>When distractions are detected, you'll get a gentle reminder to get back on track.</p>
+            </div>
+        </div>
+
+        <div class="feature">
+            <div class="feature-icon">📊</div>
+            <div class="feature-text">
+                <h3>Progress Tracking</h3>
+                <p>Keep track of your distraction patterns and work on improving your focus.</p>
+            </div>
+        </div>
+
+        <button class="start-button" onclick="startFocusReminder()">Start Focus Reminder</button>
+    </div>
+
+    <script>
+        // Create floating particles
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 30;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.style.cssText = `
+                position: absolute;
+                width: ${Math.random() * 5 + 2}px;
+                height: ${Math.random() * 5 + 2}px;
+                background: rgba(74, 144, 226, ${Math.random() * 0.3});
+                border-radius: 50%;
+                left: ${Math.random() * 100}%;
+                top: ${Math.random() * 100}%;
+                animation: floatParticle ${Math.random() * 20 + 10}s linear infinite;
+            `;
+            
+            particlesContainer.appendChild(particle);
+        }
+
+        // Add floating animation for particles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes floatParticle {
+                0% {
+                    transform: translate(0, 0) rotate(0deg);
+                    opacity: 0;
+                }
+                10% {
+                    opacity: 1;
+                }
+                90% {
+                    opacity: 1;
+                }
+                100% {
+                    transform: translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px) rotate(${Math.random() * 360}deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        function startFocusReminder() {
+            // Clear any existing localStorage
+            localStorage.clear();
+            // Close this window
+            window.close();
+        }
+    </script>
+</body>
+</html> 
